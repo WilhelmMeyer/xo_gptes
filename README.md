@@ -1,14 +1,18 @@
 # xo_gptes
 
-Skill para Claude Code que detecta e reescreve padrões de "GPTês" em texto pt-BR (suporte parcial a EN).
-
-Produz um arquivo revisado + relatório com substituições, flags e score (`baixo` / `médio` / `alto`).
+Skill para Claude Code e OpenCode que detecta e reescreve marcas de linguagem artificial
+("GPTês") em textos pt-BR, com suporte parcial a EN.
 
 ## Instalação
 
-```bash
-mkdir -p ~/.claude/skills
+**Claude Code**
+```
 git clone https://github.com/WilhelmMeyer/xo_gptes.git ~/.claude/skills/xo_gptes
+```
+
+**OpenCode**
+```
+git clone https://github.com/WilhelmMeyer/xo_gptes.git ~/.config/opencode/skills/xo_gptes
 ```
 
 ## Uso
@@ -17,45 +21,30 @@ git clone https://github.com/WilhelmMeyer/xo_gptes.git ~/.claude/skills/xo_gptes
 /xo_gptes caminho/do/arquivo.md
 ```
 
-A skill pergunta qual modelo usar na primeira execução e guarda a escolha para a sessão.
+O original não é modificado. Os artefatos gerados ficam no mesmo diretório do arquivo:
 
-### Via CLI
+- `{base}_rev{N}{ext}` — texto revisado
+- `{base}_rev{N}_report.md` — substituições aplicadas, flags e score (`baixo` / `médio` / `alto`)
 
-```bash
+## Via CLI
+
+```
 python3 xo_gptes/run.py <arquivo> --model <model-id>
 ```
 
-## Saídas
+## Como funciona
 
-No mesmo diretório do arquivo de entrada:
+A skill opera em duas camadas independentes.
 
-| Arquivo | Conteúdo |
-|---------|----------|
-| `{base}_rev{N}{ext}` | Texto reescrito |
-| `{base}_rev{N}_report.md` | Substituições + flags + score |
+A primeira usa expressões regulares para detectar padrões objetivos e localizados: palavras
+e expressões típicas de IA ("vale ressaltar", "de certa forma", "é importante destacar",
+"robusto", "holístico", "transformador"...), travessão usado indevidamente em texto corrido,
+abertura de parágrafo com gancho dramático seguido de explicação, contrastivos em excesso e
+blocos de bullet onde o texto pede prosa. Quando encontra um padrão com substituição mapeada,
+aplica diretamente no arquivo revisado.
 
-O original nunca é modificado. `N` auto-incrementado.
-
-## O que detecta
-
-- **Léxico**: _nuançado_, _robusto_, _holístico_, _ecossistema_, _transformador_...
-- **Hedging**: _vale ressaltar_, _de certa forma_, _é importante destacar_...
-- **Copula avoidance**: _representa um_, _serve como_, _funciona como_...
-- **Signposting**: _vamos explorar_, _neste artigo iremos_, _sem mais delongas_...
-- **Estruturais**: travessão indevido, foco fronteado, contrastivos excessivos, blocos de bullet
-- **Semânticos** (LLM): ESTRUTURA, HEDGING, VOZ, TOM, PROFUNDIDADE
-
-## Arquitetura
-
-**Camada 1 — regex:** detecta 50+ padrões. Idioma detectado automaticamente (pt/en/misto).
-
-**Camada 2 — LLM:** reescreve o texto completo com base nas instâncias detectadas. Decide por instância: manter (uso legítimo) ou reescrever. Runners em cascata: `claude -p` → `opencode run`. Se ambos falharem, o relatório é gerado só com Camada 1.
-
-## Referências
-
-| Arquivo | Conteúdo |
-|---------|----------|
-| `references/lexicon_ptbr.md` | Padrões pt-BR |
-| `references/lexicon_en.md` | Padrões EN |
-| `references/llm_prompt.md` | Prompt da Camada 2 |
-| `tests/` | Fixtures: `humano.md`, `ia.md`, `misto.md` |
+A segunda camada envia o texto completo a um LLM e analisa o que a regex não alcança:
+estrutura geral de resposta de chatbot, acúmulo de linguagem de ressalva ao longo do texto,
+ausência de voz ativa, tom artificialmente uniforme do início ao fim, e uso de vocabulário
+sofisticado sem conteúdo concreto por trás. Essa camada não altera o texto; registra as
+ocorrências no relatório para revisão manual do autor.
