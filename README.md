@@ -47,7 +47,7 @@ O original nunca é modificado. `N` auto-incrementado.
 
 ## Arquitetura
 
-**Camada 1 — regex:** detecta 50+ padrões sem custo de LLM. Idioma detectado automaticamente (pt/en/misto).
+**Camada 1 — regex:** detecta 50+ padrões. Idioma detectado automaticamente (pt/en/misto).
 
 **Camada 2 — LLM:** reescreve o texto completo com base nas instâncias detectadas. Decide por instância: manter (uso legítimo) ou reescrever. Runners em cascata: `claude -p` → `opencode run`. Se ambos falharem, o relatório é gerado só com Camada 1.
 
