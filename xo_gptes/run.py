@@ -591,9 +591,41 @@ def next_revision(directory: Path, base: str, ext: str) -> int:
 
 def main() -> None:
     parser = argparse.ArgumentParser(description='GPTês Reviewer')
-    parser.add_argument('file', help='Arquivo a revisar')
+    group = parser.add_mutually_exclusive_group(required=True)
+    group.add_argument('file', nargs='?', help='Arquivo a revisar')
+    group.add_argument('--text', help='Texto direto (sem arquivo)')
     parser.add_argument('--model', required=True, help='Modelo para Camada 2 (ex: claude-haiku-4-5-20251001)')
     args = parser.parse_args()
+
+    if args.text:
+        text = args.text
+        lang = detect_language(text)
+        instances, structural_flags = detect_layer1(text, lang)
+        layer2_result = call_layer2(text, instances, args.model)
+
+        revised_text = text
+        applied_subs = []
+        kept = []
+
+        if 'error' not in layer2_result:
+            revised_text = layer2_result.get('revised_text', text)
+            changes = layer2_result.get('changes', [])
+            applied_subs, kept = extract_changes(instances, changes)
+
+        l2_score = layer2_result.get('score') if 'error' not in layer2_result else None
+        final_score = score_merge(len(applied_subs), l2_score)
+        runner = layer2_result.get('_runner', 'indisponível')
+
+        report = build_report(
+            '<texto inline>', 1, instances, applied_subs, kept,
+            structural_flags, layer2_result, final_score, args.model, runner,
+        )
+
+        print("=== TEXTO REVISADO ===")
+        print(revised_text)
+        print("\n=== RELATÓRIO ===")
+        print(report)
+        return
 
     input_path = Path(args.file).expanduser().resolve()
     if not input_path.exists():

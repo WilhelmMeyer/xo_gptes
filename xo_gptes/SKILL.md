@@ -76,20 +76,37 @@ O arquivo `/tmp/xo_gptes_<SESSION_KEY>` expira quando o processo encerra ou na r
 ```bash
 RUN_PY="$HOME/.claude/skills/xo_gptes/run.py"
 [ -f "$RUN_PY" ] || RUN_PY=$(find "$HOME" -maxdepth 8 -path "*/xo_gptes/run.py" 2>/dev/null | head -1)
-python3 "$RUN_PY" <caminho_absoluto> --model <modelo>
+INPUT="<argumento recebido>"
+if [ -f "$INPUT" ]; then
+  python3 "$RUN_PY" "$INPUT" --model <modelo>
+else
+  python3 "$RUN_PY" --text "$INPUT" --model <modelo>
+fi
 ```
 
 ### Passo 3 — Exibir resultado
 
-Mostrar os 5 campos do stdout ao usuário:
+**Modo arquivo** (entrada era um caminho de arquivo): mostrar os 5 campos do stdout:
 
 ```
 Arquivo revisado : /path/artigo_rev1.md
 Relatório        : /path/artigo_rev1_report.md
 Modelo Camada 2  : <modelo>
-Runner Camada 2  : claude-cli | opencode-cli | anthropic-sdk | indisponível
+Runner Camada 2  : claude-cli | opencode-cli | indisponível
 Score de GPTês   : baixo | médio | alto
 ```
+
+**Modo texto inline** (entrada era texto direto): exibir na sessão os dois blocos retornados pelo script:
+
+```
+=== TEXTO REVISADO ===
+<texto revisado>
+
+=== RELATÓRIO ===
+<relatório markdown>
+```
+
+Renderizar o relatório como markdown na resposta.
 
 ---
 
