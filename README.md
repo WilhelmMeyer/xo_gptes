@@ -1,35 +1,35 @@
 # xo_gptes
 
-Detects and rewrites "GPTês" patterns in pt-BR text (partial EN support). Two-layer pipeline: regex detection (no LLM, no cost) + LLM rewrite via Claude.
+Detecta e reescreve padrões de "GPTês" em texto pt-BR (suporte parcial a EN). Pipeline em duas camadas: detecção por regex (sem LLM, sem custo) + reescrita via Claude.
 
-Produces a revised file + a markdown report with substitutions, semantic flags, and a GPTês score (`baixo` / `médio` / `alto`).
+Produz um arquivo revisado + um relatório markdown com as substituições, flags semânticos e um score de GPTês (`baixo` / `médio` / `alto`).
 
-## What it detects
+## O que detecta
 
 - **Léxico**: _nuançado_, _robusto_, _holístico_, _ecossistema_, _transformador_...
 - **Hedging**: _vale ressaltar_, _de certa forma_, _é importante destacar_...
 - **Copula avoidance**: _representa um_, _serve como_, _funciona como_...
 - **Signposting**: _vamos explorar_, _neste artigo iremos_, _sem mais delongas_...
-- **Structural**: em dash misuse, fronted focus, excessive contrastives, bullet blocks
-- **Semantic flags** (LLM): ESTRUTURA, HEDGING, VOZ, TOM, PROFUNDIDADE
+- **Estruturais**: uso indevido de travessão, foco fronteado, contrastivos excessivos, blocos de bullet
+- **Flags semânticos** (LLM): ESTRUTURA, HEDGING, VOZ, TOM, PROFUNDIDADE
 
-## Requirements
+## Requisitos
 
 - Python 3.10+
-- One of: [Claude Code](https://claude.ai/code), [OpenCode](https://opencode.ai), or `ANTHROPIC_API_KEY` env var
+- [Claude Code](https://claude.ai/code) ou [OpenCode](https://opencode.ai)
 
-## Installation
+## Instalação
 
 ### Claude Code
 
-Clone directly into Claude Code's skills directory:
+Clone direto no diretório de skills:
 
 ```bash
 mkdir -p ~/.claude/skills
-git clone https://github.com/willj/xo_gptes.git ~/.claude/skills/xo_gptes
+git clone https://github.com/WilhelmMeyer/xo_gptes.git ~/.claude/skills/xo_gptes
 ```
 
-Or copy manually if you already have this repo cloned:
+Ou copie manualmente se já tiver o repo clonado:
 
 ```bash
 mkdir -p ~/.claude/skills/xo_gptes
@@ -40,56 +40,56 @@ cp -r xo_gptes/ ~/.claude/skills/xo_gptes/
 
 ```bash
 mkdir -p ~/.config/opencode/skills
-git clone https://github.com/willj/xo_gptes.git ~/.config/opencode/skills/xo_gptes
+git clone https://github.com/WilhelmMeyer/xo_gptes.git ~/.config/opencode/skills/xo_gptes
 ```
 
-> OpenCode also scans `~/.claude/skills/` for compatibility — a single clone there works for both tools.
+> OpenCode também lê `~/.claude/skills/` por compatibilidade — um único clone lá funciona para as duas ferramentas.
 
-## Usage
+## Uso
 
-### As a Claude Code / OpenCode skill
+### Como skill
 
 ```
-/xo_gptes path/to/file.md
+/xo_gptes caminho/do/arquivo.md
 ```
 
-The skill asks which Claude model to use (haiku → sonnet → opus), remembers your choice for the session, then runs the review.
+A skill pergunta qual modelo Claude usar (haiku → sonnet → opus), guarda a escolha para a sessão e executa a revisão.
 
-### CLI direct
+### Via CLI
 
 ```bash
-python3 xo_gptes/run.py <file> --model <model-id>
+python3 xo_gptes/run.py <arquivo> --model <model-id>
 ```
 
-`--model` is required. Example:
+`--model` é obrigatório. Exemplo:
 
 ```bash
 python3 xo_gptes/run.py artigo.md --model claude-haiku-4-5-20251001
 ```
 
-## Output
+## Saídas
 
-Written to the same directory as the input file:
+Geradas no mesmo diretório do arquivo de entrada:
 
-| File | Content |
-|------|---------|
-| `{base}_rev{N}{ext}` | Full rewritten text |
-| `{base}_rev{N}_report.md` | Substitutions + semantic flags + score |
+| Arquivo | Conteúdo |
+|---------|----------|
+| `{base}_rev{N}{ext}` | Texto reescrito |
+| `{base}_rev{N}_report.md` | Substituições + flags semânticos + score |
 
-`N` auto-increments (`_rev1`, `_rev2`...) — the original is never modified.
+`N` auto-incrementado (`_rev1`, `_rev2`...). O original nunca é modificado.
 
-## Architecture
+## Arquitetura
 
-**Layer 1 — regex, no LLM:** detects 50+ patterns against `PTBR_RULES` and `EN_RULES`. Language auto-detected (pt/en/mixed). Returns per-match instances + paragraph-level structural flags.
+**Camada 1 — regex, sem LLM:** detecta 50+ padrões em `PTBR_RULES` e `EN_RULES`. Idioma detectado automaticamente (pt/en/misto). Retorna instâncias por match + flags estruturais por parágrafo.
 
-**Layer 2 — LLM:** receives the full text + detected instances. Makes per-instance keep/replace decisions and rewrites the full text (not word-for-word swaps). Runner cascade: `claude -p` → `opencode run` → Anthropic SDK. Graceful degradation: if all runners fail, the report is generated from Layer 1 only.
+**Camada 2 — LLM:** recebe o texto completo + instâncias detectadas. Decide por instância: manter (uso legítimo) ou reescrever a frase inteira. Runners em cascata: `claude -p` → `opencode run`. Degradação graciosa: se ambos falharem, o relatório é gerado só com Camada 1.
 
-## Reference files
+## Referências
 
-| File | Purpose |
-|------|---------|
-| `references/lexicon_ptbr.md` | pt-BR pattern list (mirrors code) |
-| `references/lexicon_en.md` | EN pattern list (mirrors code) |
-| `references/llm_prompt.md` | Layer 2 prompt template |
-| `references/regex_patterns.md` | Structural patterns |
+| Arquivo | Conteúdo |
+|---------|----------|
+| `references/lexicon_ptbr.md` | Lista de padrões pt-BR |
+| `references/lexicon_en.md` | Lista de padrões EN |
+| `references/llm_prompt.md` | Template do prompt da Camada 2 |
+| `references/regex_patterns.md` | Padrões estruturais |
 | `tests/` | Fixtures: `humano.md`, `ia.md`, `misto.md` |
