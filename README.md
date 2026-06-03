@@ -14,9 +14,10 @@ mkdir -p ~/.claude/skills
 git clone https://github.com/WilhelmMeyer/xo_gptes.git ~/.claude/skills/xo-gptes
 ```
 
-Ou copie apenas o SKILL.md se já tiver o repositório em outro diretório:
+Ou copie o arquivo de skill manualmente se já tiver o repositório clonado:
 
 ```
+mkdir -p ~/.claude/skills/xo-gptes
 cp xo_gptes/SKILL.md ~/.claude/skills/xo-gptes/
 ```
 
@@ -29,7 +30,7 @@ mkdir -p ~/.config/opencode/skills
 git clone https://github.com/WilhelmMeyer/xo_gptes.git ~/.config/opencode/skills/xo-gptes
 ```
 
-Ou copie apenas o SKILL.md se já tiver o repositório em outro diretório:
+Ou copie o arquivo de skill manualmente se já tiver o repositório clonado:
 
 ```
 mkdir -p ~/.config/opencode/skills/xo-gptes
@@ -49,6 +50,12 @@ O original não é modificado. Os artefatos gerados ficam no mesmo diretório do
 
 - `{base}_rev{N}{ext}` — texto revisado
 - `{base}_rev{N}_report.md` — substituições aplicadas, flags e score (`baixo` / `médio` / `alto`)
+
+## Via CLI
+
+```
+python3 xo_gptes/run.py <arquivo> --model <model-id>
+```
 
 ## Como funciona
 
