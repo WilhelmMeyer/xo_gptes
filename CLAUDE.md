@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this is
 
-`xo_gptes` — a Claude Code skill (`/xo_gptes`) that detects and rewrites "GPTês" patterns (AI-generated language markers) in pt-BR text, with partial English support. Produces a rewritten file + a markdown report.
+`xo-gptes` — a Claude Code skill (`/xo-gptes`) that detects and rewrites "GPTês" patterns (AI-generated language markers) in pt-BR text, with partial English support. Produces a rewritten file + a markdown report.
 
 ## Running
 
@@ -58,4 +58,4 @@ When adding new patterns, update both `xo_gptes/run.py` and the corresponding `r
 
 ## Skill invocation
 
-Model preference stored per-session in `/tmp/xo_gptes_<SESSION_KEY>`. Expires when process ends.
+Model preference stored per-session in `/tmp/xo-gptes_<SESSION_KEY>`. Expires when process ends.

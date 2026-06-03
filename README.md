@@ -1,4 +1,4 @@
-# xo_gptes
+# xo-gptes
 
 Skill para Claude Code e OpenCode que detecta e reescreve marcas de linguagem artificial
 ("GPTês") em textos pt-BR, com suporte parcial a EN.
@@ -11,14 +11,14 @@ Clone diretamente no diretório de skills do Claude Code:
 
 ```
 mkdir -p ~/.claude/skills
-git clone https://github.com/WilhelmMeyer/xo_gptes.git ~/.claude/skills/xo_gptes
+git clone https://github.com/WilhelmMeyer/xo_gptes.git ~/.claude/skills/xo-gptes
 ```
 
 Ou copie o arquivo de skill manualmente se já tiver o repositório clonado:
 
 ```
-mkdir -p ~/.claude/skills/xo_gptes
-cp xo_gptes/SKILL.md ~/.claude/skills/xo_gptes/
+mkdir -p ~/.claude/skills/xo-gptes
+cp xo_gptes/SKILL.md ~/.claude/skills/xo-gptes/
 ```
 
 **OpenCode**
@@ -27,23 +27,23 @@ Clone diretamente no diretório de skills do OpenCode:
 
 ```
 mkdir -p ~/.config/opencode/skills
-git clone https://github.com/WilhelmMeyer/xo_gptes.git ~/.config/opencode/skills/xo_gptes
+git clone https://github.com/WilhelmMeyer/xo_gptes.git ~/.config/opencode/skills/xo-gptes
 ```
 
 Ou copie o arquivo de skill manualmente se já tiver o repositório clonado:
 
 ```
-mkdir -p ~/.config/opencode/skills/xo_gptes
-cp xo_gptes/SKILL.md ~/.config/opencode/skills/xo_gptes/
+mkdir -p ~/.config/opencode/skills/xo-gptes
+cp xo_gptes/SKILL.md ~/.config/opencode/skills/xo-gptes/
 ```
 
 > **Nota:** o OpenCode também escaneia `~/.claude/skills/` por compatibilidade, então um
-> único clone em `~/.claude/skills/xo_gptes/` funciona para as duas ferramentas.
+> único clone em `~/.claude/skills/xo-gptes/` funciona para as duas ferramentas.
 
 ## Uso
 
 ```
-/xo_gptes caminho/do/arquivo.md
+/xo-gptes caminho/do/arquivo.md
 ```
 
 O original não é modificado. Os artefatos gerados ficam no mesmo diretório do arquivo:

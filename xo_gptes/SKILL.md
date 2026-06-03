@@ -1,4 +1,10 @@
-# Skill: xo_gptes
+---
+name: xo-gptes
+description: Detecta e reescreve padrões GPTês em texto pt-BR. Produz arquivo revisado + relatório.
+compatibility: claude-code, opencode
+---
+
+# Skill: xo-gptes
 
 Detecta e reescreve padrões GPTês em texto pt-BR. Produz arquivo revisado + relatório.
 
@@ -9,10 +15,10 @@ Detecta e reescreve padrões GPTês em texto pt-BR. Produz arquivo revisado + re
 ## Invocação
 
 ```
-/xo_gptes <caminho_do_arquivo>
+/xo-gptes <caminho_do_arquivo>
 ```
 
-Exemplo: `/xo_gptes artigo.md`
+Exemplo: `/xo-gptes artigo.md`
 
 ---
 
@@ -24,7 +30,7 @@ Verificar preferência da sessão atual:
 
 ```bash
 SESSION_KEY=$(ps -o ppid= -p $$ 2>/dev/null | tr -d ' ')
-PREFS_FILE="/tmp/xo_gptes_${SESSION_KEY}"
+PREFS_FILE="/tmp/xo-gptes_${SESSION_KEY}"
 cat "$PREFS_FILE" 2>/dev/null || echo "{}"
 ```
 
@@ -46,18 +52,15 @@ O agente já conhece os modelos disponíveis na sessão pelo próprio contexto d
 
 ---
 
-**Se OpenCode** (`opencode` disponível, `claude` ausente):
+**Se OpenCode** (`opencode` disponível):
 
-Consultar modelos disponíveis na sessão:
+Listar todos os modelos disponíveis na sessão:
 
 ```bash
-HAIKU=$(opencode  models 2>/dev/null | grep 'opencode/claude-haiku'  | sort -r | head -1)
-SONNET=$(opencode models 2>/dev/null | grep 'opencode/claude-sonnet' | sort -r | head -1)
-OPUS=$(opencode   models 2>/dev/null | grep 'opencode/claude-opus'   | sort -r | head -1)
-echo "$HAIKU $SONNET $OPUS"
+opencode models 2>/dev/null
 ```
 
-Apresentar os retornados, ordenados haiku → sonnet → opus (mais barato primeiro). Usar IDs exatos com prefixo `opencode/`.
+Apresentar os modelos via AskUserQuestion com uma seleção representativa (modelo atual da sessão, mais barato, mais capaz, e opção "Outro" para digitar manualmente). Usar IDs exatos como retornados pelo comando.
 
 ---
 
@@ -69,13 +72,16 @@ Após escolha, salvar para a sessão:
 echo "{\"preferred_model\": \"<modelo escolhido>\"}" > "$PREFS_FILE"
 ```
 
-O arquivo `/tmp/xo_gptes_<SESSION_KEY>` expira quando o processo encerra ou na reinicialização.
+O arquivo `/tmp/xo-gptes_<SESSION_KEY>` expira quando o processo encerra ou na reinicialização.
 
 ### Passo 2 — Executar revisão
 
 ```bash
-RUN_PY="$HOME/.claude/skills/xo_gptes/run.py"
-[ -f "$RUN_PY" ] || RUN_PY=$(find "$HOME" -maxdepth 8 -path "*/xo_gptes/run.py" 2>/dev/null | head -1)
+RUN_PY="$HOME/.claude/skills/xo-gptes/run.py"
+[ -f "$RUN_PY" ] || RUN_PY=$(find "$HOME" -maxdepth 8 -path "*/xo-gptes/run.py" 2>/dev/null | head -1)
+
+# Fallback para opencode
+[ -f "$RUN_PY" ] || RUN_PY="$HOME/.config/opencode/skills/xo-gptes/run.py"
 INPUT="<argumento recebido>"
 if [ -f "$INPUT" ]; then
   python3 "$RUN_PY" "$INPUT" --model <modelo>

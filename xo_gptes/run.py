@@ -354,7 +354,7 @@ def _call_opencode_cli(model: str, prompt: str) -> str | None:
     bin_path = shutil.which('opencode')
     if not bin_path:
         return None
-    oc_model = model if '/' in model else f'anthropic/{model}'
+    oc_model = model if '/' in model else f'opencode/{model}'
     try:
         r = subprocess.run(
             [bin_path, 'run', '--format', 'json', '--model', oc_model, prompt],
