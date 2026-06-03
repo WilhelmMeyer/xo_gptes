@@ -14,10 +14,9 @@ mkdir -p ~/.claude/skills
 git clone https://github.com/WilhelmMeyer/xo_gptes.git ~/.claude/skills/xo-gptes
 ```
 
-Ou copie o arquivo de skill manualmente se já tiver o repositório clonado:
+Ou copie apenas o SKILL.md se já tiver o repositório em outro diretório:
 
 ```
-mkdir -p ~/.claude/skills/xo-gptes
 cp xo_gptes/SKILL.md ~/.claude/skills/xo-gptes/
 ```
 
@@ -30,7 +29,7 @@ mkdir -p ~/.config/opencode/skills
 git clone https://github.com/WilhelmMeyer/xo_gptes.git ~/.config/opencode/skills/xo-gptes
 ```
 
-Ou copie o arquivo de skill manualmente se já tiver o repositório clonado:
+Ou copie apenas o SKILL.md se já tiver o repositório em outro diretório:
 
 ```
 mkdir -p ~/.config/opencode/skills/xo-gptes
