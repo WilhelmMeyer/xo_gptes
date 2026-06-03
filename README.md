@@ -51,12 +51,6 @@ O original não é modificado. Os artefatos gerados ficam no mesmo diretório do
 - `{base}_rev{N}{ext}` — texto revisado
 - `{base}_rev{N}_report.md` — substituições aplicadas, flags e score (`baixo` / `médio` / `alto`)
 
-## Via CLI
-
-```
-python3 xo_gptes/run.py <arquivo> --model <model-id>
-```
-
 ## Como funciona
 
 A skill opera em duas camadas independentes.
