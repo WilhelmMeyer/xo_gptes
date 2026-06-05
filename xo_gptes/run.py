@@ -334,14 +334,14 @@ def _parse_llm_output(raw: str) -> dict:
     return json.loads(raw)
 
 
-def _call_claude_cli(model: str, prompt: str) -> str | None:
+def _call_claude_cli(model: str, prompt: str, timeout: int = 180) -> str | None:
     bin_path = shutil.which('claude')
     if not bin_path:
         return None
     try:
         r = subprocess.run(
             [bin_path, '-p', prompt, '--model', model],
-            capture_output=True, text=True, timeout=180,
+            capture_output=True, text=True, timeout=timeout,
         )
         if r.returncode == 0 and r.stdout.strip():
             return r.stdout.strip()
@@ -350,7 +350,7 @@ def _call_claude_cli(model: str, prompt: str) -> str | None:
     return None
 
 
-def _call_opencode_cli(model: str, prompt: str) -> str | None:
+def _call_opencode_cli(model: str, prompt: str, timeout: int = 180) -> str | None:
     bin_path = shutil.which('opencode')
     if not bin_path:
         return None
@@ -358,7 +358,7 @@ def _call_opencode_cli(model: str, prompt: str) -> str | None:
     try:
         r = subprocess.run(
             [bin_path, 'run', '--format', 'json', '--model', oc_model, prompt],
-            capture_output=True, text=True, timeout=180,
+            capture_output=True, text=True, timeout=timeout,
         )
         if r.returncode != 0:
             return None
@@ -407,12 +407,15 @@ def call_layer2(text: str, instances: list, model: str) -> dict:
         texto=text,
     )
 
+    # Scale timeout with text size: 180s base + 1s per 200 chars, cap 600s
+    timeout = min(600, 180 + len(text) // 200)
+
     for runner_fn, label in [
         (_call_claude_cli,    'claude-cli'),
         (_call_opencode_cli,  'opencode-cli'),
         (_call_anthropic_sdk, 'anthropic-sdk'),
     ]:
-        raw = runner_fn(model, prompt)
+        raw = runner_fn(model, prompt) if runner_fn is _call_anthropic_sdk else runner_fn(model, prompt, timeout)
         if raw:
             try:
                 result = _parse_llm_output(raw)
